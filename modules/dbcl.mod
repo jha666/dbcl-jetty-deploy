@@ -28,7 +28,7 @@ dbcl.deploy.scanInterval=0
 # dbcl.jetty.extractWars=true
 
 #
-dbcl.jetty.driver.url=jar:file
+#dbcl.jetty.driver.url=jar:file
 dbcl.jetty.jdbc.url=jdbc:postgresql://192.168.1.12:5432/postgres
 dbcl.jetty.jdbc.user=DBCLASSLOAD
 dbcl.jetty.jdbc.passwd=Tr1ss

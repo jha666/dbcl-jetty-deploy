@@ -23,7 +23,7 @@
 		
 		 <Call id="dbappprovider" name="addAppProvider">
           <Arg>
-            <New class="se.independent.dbcl.jetty.DbWebAppProvider">
+            <New class="se.independent.dbclassloader.jetty.DbWebAppProvider">
               <Set name="extractWars"><Property name="dbcl.jetty.extractWars" default="false"/></Set>
               <Set name="extractWars"><Property name="dbcl.jetty.extractWars" default="false"/></Set>
 			  <Set name="jdbcURL"><Property name="dbcl.jetty.jdbc.url" default="jdbc:postgresql://127.0.0.1:5432/postgres"/></Set>    

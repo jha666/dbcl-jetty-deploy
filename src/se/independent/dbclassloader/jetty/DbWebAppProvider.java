@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -13,6 +14,8 @@ import java.util.Properties;
 import org.eclipse.jetty.deploy.App;
 import org.eclipse.jetty.deploy.AppProvider;
 import org.eclipse.jetty.deploy.DeploymentManager;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.util.annotation.ManagedAttribute;
 import org.eclipse.jetty.util.annotation.ManagedObject;
@@ -35,9 +38,9 @@ public class DbWebAppProvider extends AbstractLifeCycle implements AppProvider {
     private File _tempDirectory;
     private String[] _configurationClasses;
     
-    private String _jdbcURL = "jdbc:postgresql://192.168.1.2:5432/postgres";
-    private String _user = "DBCLASSLOAD";
-    private String _password = "Tr1ss";
+    private String _jdbcURL;	// = "jdbc:postgresql://192.168.1.2:5432/postgres";
+    private String _user; 		// = "DBCLASSLOAD";
+    private String _password; 	// = "Tr1ss";
 
     
     @ManagedAttribute("JDBC url")
@@ -142,7 +145,18 @@ public class DbWebAppProvider extends AbstractLifeCycle implements AppProvider {
         
         System.setProperty("java.naming.factory.initial","org.eclipse.jetty.jndi.InitialContextFactory");
         //_deploymentManager.setContexts(contexts);
-
+        
+        Enumeration<String> en =_deploymentManager.getServer().getAttributeNames();
+        while (en.hasMoreElements()) {
+        	final String name = en.nextElement();
+        	LOG.info(this.getClass().getSimpleName() + ".doStart() [server] name="+name);
+        }
+        
+       for (Connector c : _deploymentManager.getServer().getConnectors()) {
+    	  // c.get
+       }
+ 
+       
         Properties p = new Properties();
         p.setProperty("user", _user);
         p.setProperty("password", _password);
@@ -166,25 +180,19 @@ public class DbWebAppProvider extends AbstractLifeCycle implements AppProvider {
         rs.close();
         stmnt.close();
         
-//        _conn.close();
-//        _conn = null;
     }
     
     protected Connection _conn;
     
-    protected String _driver = "org.postgresql.Driver";
 
 	public void connect(String url, final Properties p) {
 		LOG.info(this.getClass().getSimpleName() + ".connect(" + url +")");
 
-		try { DriverManager.getDriver(url); } catch (Exception ign) {
-			LOG.warn(this.getClass().getSimpleName() + ".connect(" + url + ")", ign);
-		}
-		
 		try {
 			
-//			Class.forName(_driver);
+			DriverManager.getDriver(url);
 			_conn = DriverManager.getConnection(url, p);
+			
 			LOG.info(this.getClass().getSimpleName() + ".connect() [database] " + _conn.getMetaData().getDatabaseProductName() + " " + _conn.getMetaData().getDatabaseProductVersion());
 		} catch (Exception ex) {
 			LOG.info(this.getClass().getSimpleName() + ".connect(" + url + ")", ex);
