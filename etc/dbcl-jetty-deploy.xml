@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_3.dtd">
+
+<!-- =============================================================== -->
+<!-- Create the deployment manager                                   -->
+<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<!-- The deplyment manager handles the lifecycle of deploying web    -->
+<!-- applications. Apps are provided by instances of the             -->
+<!-- AppProvider interface.                                          -->
+<!-- =============================================================== -->
+<Configure id="Server" class="org.eclipse.jetty.server.Server">
+
+  <Call name="addBean">
+    <Arg>
+      <New id="DeploymentManager" class="org.eclipse.jetty.deploy.DeploymentManager">
+        <Set name="contexts">
+          <Ref refid="Contexts" />
+        </Set>
+        <Call name="setContextAttribute">
+          <Arg>org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern</Arg>
+          <Arg>.*/[^/]*servlet-api-[^/]*\.jar$|.*/javax.servlet.jsp.jstl-.*\.jar$|.*/org.apache.taglibs.taglibs-standard-impl-.*\.jar$</Arg>
+        </Call>
+		
+		 <Call id="dbappprovider" name="addAppProvider">
+          <Arg>
+            <New class="se.independent.dbcl.jetty.DbWebAppProvider">
+              <Set name="extractWars"><Property name="dbcl.jetty.extractWars" default="false"/></Set>
+              <Set name="extractWars"><Property name="dbcl.jetty.extractWars" default="false"/></Set>
+			  <Set name="jdbcURL"><Property name="dbcl.jetty.jdbc.url" default="jdbc:postgresql://127.0.0.1:5432/postgres"/></Set>    
+			  <Set name="user"><Property name="dbcl.jetty.jdbc.user" default="DBCLASSLOAD"/></Set>
+			  <Set name="password"><Property name="dbcl.jetty.jdbc.passwd" default="Tr1ss"/></Set>          
+			  <!-- Set name="defaultsDescriptor">
+                <Property>
+                  <Name>jetty.deploy.defaultsDescriptorPath</Name>
+                  <Default>
+                    <Property name="jetty.home" default="." />/etc/webdefault.xml
+                  </Default>
+                </Property>
+              </Set -->
+            </New>
+          </Arg>
+        </Call>
+		
+      </New>
+    </Arg>
+  </Call>
+</Configure>
