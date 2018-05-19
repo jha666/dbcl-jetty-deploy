@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/dbcl git2"/>
+	<classpathentry kind="lib" path="C:/Users/jha/jetty-distribution-9.4.4.v20170414/jetty-distribution-9.4.4.v20170414/lib/jetty-deploy-9.4.4.v20170414.jar" sourcepath="C:/Users/jha/jetty.project-jetty-9.4.x/jetty-deploy"/>
+	<classpathentry kind="lib" path="C:/Users/jha/jetty-distribution-9.4.4.v20170414/jetty-distribution-9.4.4.v20170414/lib/jetty-server-9.4.4.v20170414.jar" sourcepath="C:/Users/jha/jetty.project-jetty-9.4.x/jetty-server"/>
+	<classpathentry kind="lib" path="C:/Users/jha/jetty-distribution-9.4.4.v20170414/jetty-distribution-9.4.4.v20170414/lib/jetty-util-9.4.4.v20170414.jar" sourcepath="C:/Users/jha/jetty.project-jetty-9.4.x/jetty-util"/>
+	<classpathentry kind="lib" path="C:/Users/jha/jetty-distribution-9.4.4.v20170414/jetty-distribution-9.4.4.v20170414/lib/jetty-webapp-9.4.4.v20170414.jar" sourcepath="C:/Users/jha/jetty.project-jetty-9.4.x"/>
+	<classpathentry kind="lib" path="C:/Users/jha/jetty-distribution-9.4.4.v20170414/jetty-distribution-9.4.4.v20170414/lib/jetty-servlet-9.4.4.v20170414.jar" sourcepath="C:/Users/jha/jetty.project-jetty-9.4.x/jetty-servlet"/>
+	<classpathentry kind="lib" path="C:/Users/jha/jetty-distribution-9.4.4.v20170414/jetty-distribution-9.4.4.v20170414/lib/servlet-api-3.1.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
