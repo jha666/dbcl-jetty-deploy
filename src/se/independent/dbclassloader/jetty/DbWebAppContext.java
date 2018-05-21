@@ -70,12 +70,13 @@ public class DbWebAppContext extends WebAppContext {
 	@Override
 	protected void doStop() throws Exception {
 		LOG.info(this.getClass().getSimpleName() + ".doStop()");
-		super.doStop();
 
 		ClassLoader x = getClassLoader();
 		if (x != null && x instanceof JettyDbClassLoader) {
-			((JettyDbClassLoader)x).close();
+			//((JettyDbClassLoader)x).close();
 		}
+		
+		super.doStop();
 	}
 
 	@Override

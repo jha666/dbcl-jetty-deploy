@@ -2,11 +2,18 @@ package se.independent.dbclassloader.jetty;
 
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.sql.Connection;
+import java.sql.Driver;
 import java.sql.DriverManager;
+import java.sql.DriverPropertyInfo;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -16,18 +23,19 @@ import org.eclipse.jetty.deploy.AppProvider;
 import org.eclipse.jetty.deploy.DeploymentManager;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.util.annotation.ManagedAttribute;
 import org.eclipse.jetty.util.annotation.ManagedObject;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
+import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.log.Log;
-import org.eclipse.jetty.util.log.Logger;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 @ManagedObject("Provider for start-up deployement of webapps based on presence in dataabse")
 public class DbWebAppProvider extends AbstractLifeCycle implements AppProvider {
 
-	private static final Logger LOG = Log.getLogger(DbWebAppProvider.class);
+	private static final org.eclipse.jetty.util.log.Logger LOG = Log.getLogger(DbWebAppProvider.class);
 
     private Map<String, App> _appMap = new HashMap<String, App>();
 
@@ -146,16 +154,58 @@ public class DbWebAppProvider extends AbstractLifeCycle implements AppProvider {
         System.setProperty("java.naming.factory.initial","org.eclipse.jetty.jndi.InitialContextFactory");
         //_deploymentManager.setContexts(contexts);
         
-        Enumeration<String> en =_deploymentManager.getServer().getAttributeNames();
-        while (en.hasMoreElements()) {
-        	final String name = en.nextElement();
-        	LOG.info(this.getClass().getSimpleName() + ".doStart() [server] name="+name);
+        String host = "0.0.0.0";
+        int port = 8080;
+        String name = "";
+        final Server server = _deploymentManager.getServer();
+        for (Connector c : server.getConnectors()) {
+    	   
+       		LOG.info(this.getClass().getSimpleName() + ".doStart() [connector] c="+c);
+       		
+       		if (c instanceof ServerConnector) {
+       			ServerConnector sc = (ServerConnector) c;
+       			port = sc.getPort();
+       			if (sc.getHost() != null) {
+       				host = sc.getHost();
+       			}
+       			if (c.getName() != null) {
+       				name = c.getName();
+       			}
+       		}
         }
-        
-       for (Connector c : _deploymentManager.getServer().getConnectors()) {
-    	  // c.get
-       }
- 
+
+//        addLifeCycleListener(new Listener() {
+//			
+//			@Override
+//			public void lifeCycleStopping(LifeCycle event) {
+//			}
+//			
+//			@Override
+//			public void lifeCycleStopped(LifeCycle event) {
+//			}
+//			
+//			@Override
+//			public void lifeCycleStarting(LifeCycle event) {
+//			}
+//			
+//			@Override
+//			public void lifeCycleStarted(LifeCycle event) {
+//		    	   SessionIdManager m = server.getSessionIdManager();
+//		    	   String name = m != null ? m.getWorkerName() : null;
+//		    	   LOG.info(this.getClass().getSimpleName() + ".doStart() worker name: " + name);
+//			}
+//			
+//			@Override
+//			public void lifeCycleFailure(LifeCycle event, Throwable cause) {
+//			}
+//		});
+		
+        if (host == null) {
+        	InetAddress ownIP = InetAddress.getLocalHost();
+            host = ownIP.getHostName();
+        }
+  		LOG.info(this.getClass().getSimpleName() + ".doStart() host="+host + " port=" + port + " name=" + name);
+
        
         Properties p = new Properties();
         p.setProperty("user", _user);
@@ -205,10 +255,36 @@ public class DbWebAppProvider extends AbstractLifeCycle implements AppProvider {
     @Override
     protected void doStop() throws Exception
     {
-    	if (_conn != null) {
-	        _conn.close();
-	        _conn = null;
-    	}
+    	LOG.info(this.getClass().getSimpleName() + ".doStop() " + _conn.isValid(1234));
+    	
+    	addLifeCycleListener(new Listener() {
+			
+			@Override
+			public void lifeCycleStopping(LifeCycle event) {
+			}
+			
+			@Override
+			public void lifeCycleStopped(LifeCycle event) {
+		    	if (_conn != null) {
+			        try { _conn.close(); } catch (SQLException sqx) {} finally {
+			        	_conn = null;
+			        }
+		    	}
+			}
+			
+			@Override
+			public void lifeCycleStarting(LifeCycle event) {
+			}
+			
+			@Override
+			public void lifeCycleStarted(LifeCycle event) {
+			}
+			
+			@Override
+			public void lifeCycleFailure(LifeCycle event, Throwable cause) {
+			}
+		});
+    	
     }
     
     /* ------------------------------------------------------------ */
@@ -308,4 +384,60 @@ public class DbWebAppProvider extends AbstractLifeCycle implements AppProvider {
     {
         return _tempDirectory;
     }
+
+    private String driverURL;
+    protected void loadDriver() throws MalformedURLException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException  {
+    	//getLog().info("- execute() driverURL=" + driverURL);
+        URL u = new URL(driverURL);
+		String classname = "org.postgresql.Driver";
+		URLClassLoader ucl = new URLClassLoader(new URL[] { u });
+		Driver d = (Driver) Class.forName(classname, true, ucl).newInstance();
+		DriverManager.registerDriver(new DriverShim(d));
+			
+    }
+
+    
+    class DriverShim implements Driver {
+	    private Driver driver;
+
+	    DriverShim(Driver d) {
+	        this.driver = d;
+	    }
+
+	    @Override
+	    public boolean acceptsURL(String u) throws SQLException {
+	        return this.driver.acceptsURL(u);
+	    }
+
+	    @Override
+	    public Connection connect(String u, Properties p) throws SQLException {
+	        return this.driver.connect(u, p);
+	    }
+
+	    @Override
+	    public int getMajorVersion() {
+	        return this.driver.getMajorVersion();
+	    }
+
+	    @Override
+	    public int getMinorVersion() {
+	        return this.driver.getMinorVersion();
+	    }
+
+	    @Override
+	    public DriverPropertyInfo[] getPropertyInfo(String u, Properties p) throws SQLException {
+	        return this.driver.getPropertyInfo(u, p);
+	    }
+
+	    @Override
+	    public boolean jdbcCompliant() {
+	        return this.driver.jdbcCompliant();
+	    }
+
+	    @Override
+	    public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
+	        return driver.getParentLogger();
+	    }
+
+	}
 }
