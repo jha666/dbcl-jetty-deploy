@@ -73,7 +73,7 @@ public class DbWebAppContext extends WebAppContext {
 
 		ClassLoader x = getClassLoader();
 		if (x != null && x instanceof JettyDbClassLoader) {
-			//((JettyDbClassLoader)x).close();
+			((JettyDbClassLoader)x).close();
 		}
 		
 		super.doStop();

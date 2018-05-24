@@ -29,8 +29,8 @@ public class JettyDbClassLoader extends JDBCDbClassLoader {
 	@Override
 	public void close() {
 		LOG.info(this.getClass().getSimpleName() + ".close()");
-		conn= null;
-		super.close();
+//		conn = null;
+//		super.close();
 	}
 	
 	

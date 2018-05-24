@@ -256,35 +256,7 @@ public class DbWebAppProvider extends AbstractLifeCycle implements AppProvider {
     protected void doStop() throws Exception
     {
     	LOG.info(this.getClass().getSimpleName() + ".doStop() " + _conn.isValid(1234));
-    	
-    	addLifeCycleListener(new Listener() {
-			
-			@Override
-			public void lifeCycleStopping(LifeCycle event) {
-			}
-			
-			@Override
-			public void lifeCycleStopped(LifeCycle event) {
-		    	if (_conn != null) {
-			        try { _conn.close(); } catch (SQLException sqx) {} finally {
-			        	_conn = null;
-			        }
-		    	}
-			}
-			
-			@Override
-			public void lifeCycleStarting(LifeCycle event) {
-			}
-			
-			@Override
-			public void lifeCycleStarted(LifeCycle event) {
-			}
-			
-			@Override
-			public void lifeCycleFailure(LifeCycle event, Throwable cause) {
-			}
-		});
-    	
+     	  	
     }
     
     /* ------------------------------------------------------------ */
