@@ -1,10 +1,14 @@
 package se.independent.dbclassloader.jetty;
 
+import java.io.IOException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.eclipse.jetty.util.log.Log;
@@ -61,4 +65,12 @@ public class JettyDbClassLoader extends JDBCDbClassLoader {
 		return rv;
 	}
 
+	 @Override
+	 public Enumeration<URL> getResources(String name) throws IOException {
+		 List<URL> resources = new ArrayList<URL>();
+		 URL url = this.findResource(name);
+		 resources.add(url);
+		 LOG.info("- getResources(" + name + ") = [" + resources.size() + "]");
+		 return Collections.enumeration(resources);
+	 }
 }

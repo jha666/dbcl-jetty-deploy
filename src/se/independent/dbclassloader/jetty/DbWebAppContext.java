@@ -29,6 +29,7 @@ public class DbWebAppContext extends WebAppContext {
 		setClassLoader(dbcl);
 		setConfigurationClasses(WebAppContext.DEFAULT_CONFIGURATION_CLASSES);
 		dbcl.setClasspathName(appOriginId);
+		Thread.currentThread().setContextClassLoader(dbcl);
 	}
 
 	public Resource newResource(final String name) {
