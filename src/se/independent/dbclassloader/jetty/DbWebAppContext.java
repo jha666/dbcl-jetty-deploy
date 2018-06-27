@@ -1,11 +1,13 @@
 package se.independent.dbclassloader.jetty;
 
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.List;
 
 import org.eclipse.jetty.server.Connector;
@@ -33,34 +35,38 @@ public class DbWebAppContext extends WebAppContext {
 	}
 
 	public Resource newResource(final String name) {
-		LOG.info(this.getClass().getSimpleName() + ".newResource(" + name + ")");
 		ClassLoader cl = getClassLoader();
 		URL url = cl.getResource(name);
+		LOG.info(this.getClass().getSimpleName() + ".newResource(" + name + ") url=" + url);
 		return Resource.newResource(url);
 	}
 
 	
+    private Throwable _unavailableException;
+
 	@Override
 	protected void doStart() throws Exception {
 		LOG.info(this.getClass().getSimpleName() + ".doStart()");
 		try {
 			connect();
 			// _metadata.setAllowDuplicateFragmentNames(isAllowDuplicateFragmentNames());
-			// Boolean validate = (Boolean)getAttribute(MetaData.VALIDATE_XML);
-			// _metadata.setValidateXml((validate!=null && validate.booleanValue()));
+			//Boolean validate = (Boolean)getAttribute(MetaData.VALIDATE_XML);
+			//_metadata.setValidateXml((validate!=null && validate.booleanValue()));
+			
 			preConfigure();
 			super.doStart();
 			postConfigure();
 			//
-			// if (isLogUrlOnStart())
-			dumpUrl();
+			if (isLogUrlOnStart()) {
+				dumpUrl();
+			}
 		} catch (Throwable t) {
 			// start up of the webapp context failed, make sure it is not started
 			LOG.warn("Failed startup of context " + this, t);
-			// _unavailableException=t;
+			 _unavailableException=t;
 			setAvailable(false); // webapp cannot be accessed (results in status code 503)
-			// if (isThrowUnavailableOnStartupException())
-			// throw t;
+			if (isThrowUnavailableOnStartupException())
+				throw t;
 		}
 	}
 
@@ -107,6 +113,7 @@ public class DbWebAppContext extends WebAppContext {
 				LOG.info(this.getClass().getSimpleName() + ".listWebInfLibJars() resource=" + r);
 			}
 		}
+		
 //		Statement stmnt = null;
 //		ResultSet rs = null;
 //		
@@ -140,13 +147,17 @@ public class DbWebAppContext extends WebAppContext {
 
 	@Override
 	public Resource getBaseResource() {
-		LOG.info(this.getClass().getSimpleName() + ".getBaseResource()");
+		Resource rv = null;
 		ClassLoader cl = getClassLoader();
 		if (cl != null) {
-			URL url = cl.getResource(getWar());
-			return Resource.newResource(url);	
-		} else
-			return super.getBaseResource();
+			final String war = getWar();
+			final URL url = cl.getResource(war);
+			rv = Resource.newResource(url);	
+		} 
+//		else
+//			rv = super.getBaseResource();
+//		LOG.info(this.getClass().getSimpleName() + ".getBaseResource() = " + rv);
+		return rv;
 	}
 	
 	
