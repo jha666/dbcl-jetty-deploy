@@ -65,12 +65,31 @@ public class JettyDbClassLoader extends JDBCDbClassLoader {
 		return rv;
 	}
 
-	 @Override
-	 public Enumeration<URL> getResources(String name) throws IOException {
-		 List<URL> resources = new ArrayList<URL>();
-		 URL url = this.findResource(name);
-		 resources.add(url);
-		 LOG.info("- getResources(" + name + ") = [" + resources.size() + "]");
-		 return Collections.enumeration(resources);
-	 }
+//	 @Override
+//	 public Enumeration<URL> getResources(String name) throws IOException {
+//		 Enumeration<URL> rv = super.getResources(name);
+//		 if (rv == null || rv.hasMoreElements()) {
+//			 List<URL> resources = new ArrayList<URL>();
+//			 URL url = this.findResource(name);
+//			 if (url != null) {
+//				 resources.add(url);
+//				 rv = Collections.enumeration(resources);
+//			 }
+//		 }
+//		 LOG.info("- getResources(" + name + ") = " + rv);
+//		 return rv;
+//	 }
+	
+	@Override
+	protected Package getPackage(String name) {
+		Package rv = super.getPackage(name);
+		LOG.info(this.getClass().getSimpleName() + ".getPackage(" + name + ")");
+		return rv;
+	}
+	
+	@Override
+	protected Package[] getPackages() {
+		LOG.info(this.getClass().getSimpleName() + ".getPackages()");
+		return super.getPackages();
+	}
 }

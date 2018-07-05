@@ -218,7 +218,7 @@ public class DbWebAppProvider extends AbstractLifeCycle implements AppProvider {
         
         while (rs.next()) {
 	    	String filename = rs.getString("WAR_NAME");
-	    	LOG.info(this.getClass().getSimpleName() + ".doStart() added ",filename);
+	    	LOG.info(this.getClass().getSimpleName() + ".doStart() added " + filename);
 	        App app =  new App(_deploymentManager,this,filename);
 	        if (app != null)
 	        {

@@ -32,6 +32,7 @@ public class DbWebAppContext extends WebAppContext {
 		setConfigurationClasses(WebAppContext.DEFAULT_CONFIGURATION_CLASSES);
 		dbcl.setClasspathName(appOriginId);
 		Thread.currentThread().setContextClassLoader(dbcl);
+		setLogUrlOnStart(true);
 	}
 
 	public Resource newResource(final String name) {
@@ -199,7 +200,7 @@ public class DbWebAppContext extends WebAppContext {
 			if (displayName == null)
 				displayName = "DbWebApp@" + Arrays.hashCode(connectors);
 
-			LOG.info(displayName + " at http://" + connectors[i].toString() + getContextPath());
+			LOG.info(displayName + " at http://" + connectors[i].toString() + getContextPath()); 
 		}
 	}
 
