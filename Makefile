@@ -3,7 +3,7 @@ include dbcl.${OS}.mk
 REVISION = PA1
 WSBP=bin
 
-DBCL_JAR = C:\Users\jha\git\DbClassLoaderMaster\target\dbcl-PA3.jar
+DBCL_JAR = C:\Users\jha\git\DbClassLoader\target\dbcl-PB2.jar
 
 DBCL_FILES = $(WSBP)/se/independent/dbcl/jetty/DbWebAppProvider.class \
 	$(WSBP)/se/independent/dbcl/jetty/DbWebAppContext.class 

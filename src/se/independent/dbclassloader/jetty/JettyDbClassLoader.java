@@ -1,14 +1,10 @@
 package se.independent.dbclassloader.jetty;
 
-import java.io.IOException;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 
 import org.eclipse.jetty.util.log.Log;

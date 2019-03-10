@@ -28,7 +28,6 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.util.annotation.ManagedAttribute;
 import org.eclipse.jetty.util.annotation.ManagedObject;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
-import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.webapp.WebAppContext;
 
@@ -171,6 +170,8 @@ public class DbWebAppProvider extends AbstractLifeCycle implements AppProvider {
        			if (c.getName() != null) {
        				name = c.getName();
        			}
+       			
+       			sc.close();
        		}
         }
 
